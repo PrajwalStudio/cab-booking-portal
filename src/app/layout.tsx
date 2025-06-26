@@ -27,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <ClipboardList className="w-5 h-5" />
                 <span className="hidden sm:inline">Bookings</span>
               </Link>
+              
             </nav>
           </header>
 
