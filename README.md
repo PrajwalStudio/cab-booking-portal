@@ -120,13 +120,29 @@ JWT_SECRET=your_jwt_secret
 
 ## 📸 Screenshots
 
-Include screenshots of:
-- Login/Register
-- Booking form
-- Vendor dashboard
-- Driver/Vehicle management
+Here are some UI snapshots of the platform:
 
----
+### 🔐 Login / Register
+- ![Login](./screenshots/login.jpeg)
+- ![Register](./screenshots/register.jpeg)
+
+### 🏢 Company Dashboard
+- ![Booking Form](./screenshots/booking.jpeg)
+- ![Booking List](./screenshots/booking-list.jpeg)
+- ![Available Cabs](./screenshots/available.jpeg)
+
+### 🚗 Vendor Dashboard
+- ![Vendor View](./screenshots/vendor.jpeg)
+
+### 🧑‍✈️ Driver Management
+- ![Driver List](./screenshots/driver.jpeg)
+
+### 🚙 Vehicle Management
+- ![Vehicle List](./screenshots/vehicle.jpeg)
+
+### 🏢 Company Details
+- ![Company Details](./screenshots/company.jpeg)
+
 
 ## 📚 License
 
