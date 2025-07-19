@@ -144,10 +144,6 @@ Here are some UI snapshots of the platform:
 - ![Company Details](./screenshots/company.jpeg)
 
 
-## 📚 License
-
-This project is licensed under the **MIT License**.
-
 ---
 
 ## ✍️ Author
