@@ -3,7 +3,6 @@ const router = express.Router();
 const { Booking } = require('../models');
 const { authenticateToken } = require('../middleware/auth');
 
-// ✅ Company: Get bookings with optional status filter
 router.get('/company', authenticateToken, async (req, res) => {
   try {
     const where = { companyId: req.user.id };
@@ -23,7 +22,6 @@ router.get('/company', authenticateToken, async (req, res) => {
   }
 });
 
-// ✅ Vendor: Get bookings assigned to the vendor
 router.get('/vendor', authenticateToken, async (req, res) => {
   try {
     const bookings = await Booking.findAll({
@@ -37,7 +35,6 @@ router.get('/vendor', authenticateToken, async (req, res) => {
   }
 });
 
-// ✅ Create a new booking (Company)
 router.post('/', authenticateToken, async (req, res) => {
   try {
     const {
@@ -75,7 +72,6 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 });
 
-// ✅ Vendor: Get open market bookings
 router.get('/open', authenticateToken, async (req, res) => {
   try {
     const bookings = await Booking.findAll({
@@ -92,7 +88,6 @@ router.get('/open', authenticateToken, async (req, res) => {
   }
 });
 
-// ✅ Vendor: Accept a booking
 router.put('/:id/accept', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
@@ -115,72 +110,61 @@ router.put('/:id/accept', authenticateToken, async (req, res) => {
     res.status(500).json({ message: 'Server error while accepting booking' });
   }
 });
-// ✅ Vendor: Get open market bookings (pending + isOpenMarket)
-router.get('/open', authenticateToken, async (req, res) => {
-  try {
-    const bookings = await Booking.findAll({
-      where: {
-        isOpenMarket: true,
-        status: 'pending',
-      },
-      order: [['createdAt', 'DESC']],
-    });
-    res.json(bookings);
-  } catch (error) {
-    console.error('Error fetching open bookings:', error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
 
-// ✅ Vendor: Get accepted bookings
 router.get('/vendor/accepted', authenticateToken, async (req, res) => {
   try {
     const bookings = await Booking.findAll({
-      where: {
-        vendorId: req.user.id,
-        status: 'accepted'
-      },
+      where: { vendorId: req.user.id },
       order: [['createdAt', 'DESC']],
     });
     res.json(bookings);
   } catch (error) {
-    console.error('Error fetching accepted bookings:', error);
+    console.error('Error fetching vendor bookings:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// ✅ Vendor: Mark a booking as completed
+router.put('/:id/start', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const booking = await Booking.findByPk(id);
+
+    if (!booking) return res.status(404).json({ message: 'Booking not found' });
+    if (booking.vendorId !== req.user.id) return res.status(403).json({ message: 'Unauthorized' });
+    if (booking.status !== 'accepted') {
+      return res.status(400).json({ message: 'Only accepted bookings can be started' });
+    }
+
+    booking.status = 'ongoing';
+    await booking.save();
+    res.json({ message: 'Trip started', booking });
+  } catch (error) {
+    console.error('Error starting trip:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 router.put('/:id/complete', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-
     const booking = await Booking.findByPk(id);
-    if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' });
-    }
 
-    if (booking.vendorId !== req.user.id) {
-      return res.status(403).json({ message: 'Unauthorized' });
-    }
-
-    if (booking.status !== 'accepted') {
-      return res.status(400).json({ message: 'Only accepted bookings can be completed' });
+    if (!booking) return res.status(404).json({ message: 'Booking not found' });
+    if (booking.vendorId !== req.user.id) return res.status(403).json({ message: 'Unauthorized' });
+    if (booking.status !== 'ongoing') {
+      return res.status(400).json({ message: 'Only ongoing trips can be completed' });
     }
 
     booking.status = 'completed';
     booking.dropTime = new Date();
     await booking.save();
-
-    res.json({ message: 'Booking marked as completed', booking });
+    res.json({ message: 'Trip completed', booking });
   } catch (error) {
     console.error('Error completing booking:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-
-
-// ✅ Company: Cancel a pending booking
 router.put('/:id/cancel', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;

@@ -3,6 +3,8 @@ import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const RegisterForm = () => {
   const [form, setForm] = useState({
     name: '',
@@ -21,7 +23,7 @@ const RegisterForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/register', form);
+      const res = await axios.post(`${API_URL}/api/auth/register`, form);
       login(res.data);
       navigate('/dashboard');
     } catch (err) {

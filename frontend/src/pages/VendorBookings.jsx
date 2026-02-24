@@ -3,6 +3,8 @@ import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const VendorBookings = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -12,7 +14,7 @@ const VendorBookings = () => {
     const fetchOpenBookings = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:5000/api/bookings/open', {
+        const res = await axios.get(`${API_URL}/api/bookings/open`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setBookings(res.data);
@@ -30,7 +32,7 @@ const VendorBookings = () => {
   const handleAccept = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/bookings/${id}/accept`, {}, {
+      await axios.put(`${API_URL}/api/bookings/${id}/accept`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setBookings(bookings.filter(b => b.id !== id));
@@ -66,7 +68,6 @@ const VendorBookings = () => {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 strokeLinecap="round"
@@ -131,7 +132,6 @@ const VendorBookings = () => {
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
                           strokeLinecap="round"

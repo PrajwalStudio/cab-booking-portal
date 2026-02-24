@@ -1,19 +1,17 @@
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
-// Verify JWT token
 const authenticateToken = async (req, res, next) => {
   try {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+    const token = authHeader && authHeader.split(' ')[1];
 
     if (!token) {
       return res.status(401).json({ message: 'Access token required' });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    
-    // Get user from database
+
     const user = await User.findByPk(decoded.userId);
     if (!user || !user.isActive) {
       return res.status(401).json({ message: 'Invalid token or user not found' });
@@ -27,7 +25,6 @@ const authenticateToken = async (req, res, next) => {
   }
 };
 
-// Role-based access control
 const authorizeRole = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {
@@ -44,10 +41,7 @@ const authorizeRole = (...roles) => {
   };
 };
 
-// Vendor-only access
 const vendorOnly = authorizeRole('vendor');
-
-// Company-only access
 const companyOnly = authorizeRole('company');
 
 module.exports = {

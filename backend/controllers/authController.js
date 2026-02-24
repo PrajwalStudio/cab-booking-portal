@@ -1,8 +1,6 @@
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
-// Generate JWT token
 const generateToken = (userId, role) => {
   return jwt.sign(
     { userId, role }, 
@@ -11,12 +9,10 @@ const generateToken = (userId, role) => {
   );
 };
 
-// Register new user
 const register = async (req, res) => {
   try {
     const { name, email, password, role, phone, address } = req.body;
 
-    // Validation
     if (!name || !email || !password || !role) {
       return res.status(400).json({ 
         message: 'Name, email, password, and role are required' 
@@ -29,13 +25,11 @@ const register = async (req, res) => {
       });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
-    // Create user
     const user = await User.create({
       name,
       email,
@@ -45,10 +39,8 @@ const register = async (req, res) => {
       address
     });
 
-    // Generate token
     const token = generateToken(user.id, user.role);
 
-    // Remove password from response
     const userResponse = {
       id: user.id,
       name: user.name,
@@ -72,37 +64,30 @@ const register = async (req, res) => {
   }
 };
 
-// Login user
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validation
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    // Find user
     const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Check if user is active
     if (!user.isActive) {
       return res.status(401).json({ message: 'Account is deactivated' });
     }
 
-    // Validate password
     const isValidPassword = await user.validatePassword(password);
     if (!isValidPassword) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Generate token
     const token = generateToken(user.id, user.role);
 
-    // Remove password from response
     const userResponse = {
       id: user.id,
       name: user.name,
@@ -125,7 +110,6 @@ const login = async (req, res) => {
   }
 };
 
-// Get current user profile
 const getProfile = async (req, res) => {
   try {
     const userResponse = {
@@ -147,7 +131,6 @@ const getProfile = async (req, res) => {
   }
 };
 
-// Update user profile
 const updateProfile = async (req, res) => {
   try {
     const { name, phone, address } = req.body;
@@ -182,7 +165,6 @@ const updateProfile = async (req, res) => {
   }
 };
 
-// Change password
 const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -193,17 +175,14 @@ const changePassword = async (req, res) => {
       });
     }
 
-    // Validate current password
     const isValidPassword = await req.user.validatePassword(currentPassword);
     if (!isValidPassword) {
       return res.status(401).json({ message: 'Current password is incorrect' });
     }
 
-    // Update password
-    await User.update(
-      { password: newPassword },
-      { where: { id: req.user.id } }
-    );
+    // Use instance save() so beforeUpdate hook hashes the password
+    req.user.password = newPassword;
+    await req.user.save();
 
     res.json({ message: 'Password changed successfully' });
 

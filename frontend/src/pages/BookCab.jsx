@@ -4,6 +4,8 @@ import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import PlacesAutocompleteInput from "../components/PlacesAutocompleteInput";
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const BookCab = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -31,7 +33,7 @@ const BookCab = () => {
 
     try {
       await axios.post(
-        "http://localhost:5000/api/bookings",
+        `${API_URL}/api/bookings`,
         { ...form, pickupTime },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -133,7 +135,7 @@ const BookCab = () => {
               <input
                 name="pickupDate"
                 type="date"
-                min={new Date().toISOString().split("T")[0]} // Today's date
+                min={new Date().toISOString().split("T")[0]}
                 value={form.pickupDate}
                 onChange={handleChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -149,8 +151,8 @@ const BookCab = () => {
                 type="time"
                 min={
                   form.pickupDate === new Date().toISOString().split("T")[0]
-                    ? new Date().toTimeString().substring(0, 5) // Current time if today
-                    : "00:00" // Midnight if future date
+                    ? new Date().toTimeString().substring(0, 5)
+                    : "00:00"
                 }
                 value={form.pickupTime}
                 onChange={handleChange}

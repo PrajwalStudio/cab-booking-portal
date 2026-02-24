@@ -7,26 +7,23 @@ async function testConnection() {
   });
 
   try {
-    console.log('🔄 Connecting to database...');
+    console.log('Connecting to database...');
     await client.connect();
-    console.log('✅ Connected successfully!');
-    
-    // Test query
+    console.log('Connected successfully!');
+
     const result = await client.query('SELECT NOW() as current_time');
-    console.log('📅 Current time from DB:', result.rows[0].current_time);
-    
-    // Check if any tables exist
+    console.log('Current time from DB:', result.rows[0].current_time);
+
     const tables = await client.query(`
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public'
     `);
-    
-    console.log('📋 Existing tables:', tables.rows);
+
+    console.log('Existing tables:', tables.rows);
     
   } catch (error) {
-    console.error('❌ Connection failed:', error.message);
-    console.error('Full error:', error);
+    console.error('Connection failed:', error.message);
   } finally {
     await client.end();
   }

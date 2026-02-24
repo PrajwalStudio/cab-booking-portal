@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const VendorVehicles = () => {
   const [vehicles, setVehicles] = useState([]);
   const [form, setForm] = useState({ 
@@ -13,7 +15,7 @@ const VendorVehicles = () => {
     const fetchVehicles = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:5000/api/vendor/vehicles', {
+        const res = await axios.get(`${API_URL}/api/vendor/vehicles`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setVehicles(res.data);
@@ -33,7 +35,7 @@ const VendorVehicles = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post('http://localhost:5000/api/vendor/vehicles', form, {
+      const res = await axios.post(`${API_URL}/api/vendor/vehicles`, form, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setVehicles([...vehicles, res.data]);
@@ -115,7 +117,6 @@ const VendorVehicles = () => {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
                   strokeLinecap="round"
@@ -138,7 +139,6 @@ const VendorVehicles = () => {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 strokeLinecap="round"

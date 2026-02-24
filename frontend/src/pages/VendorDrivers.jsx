@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const VendorDrivers = () => {
   const { user } = useContext(AuthContext);
   const [drivers, setDrivers] = useState([]);
@@ -15,7 +17,7 @@ const VendorDrivers = () => {
   const fetchDrivers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/vendor/drivers', {
+      const res = await axios.get(`${API_URL}/api/vendor/drivers`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDrivers(res.data);
@@ -29,7 +31,7 @@ const VendorDrivers = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await axios.post(
-        'http://localhost:5000/api/vendor/drivers',
+        `${API_URL}/api/vendor/drivers`,
         {
           name: form.name,
           phone: form.phone,
@@ -62,7 +64,7 @@ const VendorDrivers = () => {
     if (user?.role === 'vendor') {
       fetchDrivers();
     }
-  }, [user]); // Added user as dependency
+  }, [user]);
 
   if (!user || user.role !== 'vendor') {
     return (
@@ -158,7 +160,6 @@ const VendorDrivers = () => {
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
                   strokeLinecap="round"
@@ -181,7 +182,6 @@ const VendorDrivers = () => {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
             >
               <path
                 strokeLinecap="round"

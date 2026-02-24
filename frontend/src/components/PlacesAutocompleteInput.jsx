@@ -22,7 +22,16 @@ const PlacesAutocompleteInput = ({ value, onChange, placeholder }) => {
     }
   };
 
-  if (!isLoaded) return <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} className="w-full mb-4 border p-2 rounded" />;
+  if (!isLoaded) {
+    return (
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full mb-4 border p-2 rounded"
+      />
+    );
+  }
 
   return (
     <Autocomplete

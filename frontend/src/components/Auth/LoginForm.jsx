@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const LoginForm = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const { login } = useContext(AuthContext);
@@ -15,7 +17,7 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
+      const res = await axios.post(`${API_URL}/api/auth/login`, form);
       login(res.data);
       navigate('/dashboard');
     } catch (err) {

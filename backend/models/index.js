@@ -4,7 +4,6 @@ const Booking = require('./Booking');
 const Driver = require('./Driver');
 const Vehicle = require('./Vehicle');
 
-// Define associations
 User.hasMany(Booking, { as: 'CompanyBookings', foreignKey: 'companyId' });
 User.hasMany(Booking, { as: 'VendorBookings', foreignKey: 'vendorId' });
 User.hasMany(Driver, { foreignKey: 'vendorId' });

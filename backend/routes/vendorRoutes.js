@@ -3,7 +3,6 @@ const router = express.Router();
 const { Driver, Vehicle } = require('../models');
 const { authenticateToken } = require('../middleware/auth');
 
-// ✅ Get all drivers for the logged-in vendor
 router.get('/drivers', authenticateToken, async (req, res) => {
   try {
     const drivers = await Driver.findAll({ where: { vendorId: req.user.id } });
@@ -14,7 +13,6 @@ router.get('/drivers', authenticateToken, async (req, res) => {
   }
 });
 
-// ✅ Add a new driver
 router.post('/drivers', authenticateToken, async (req, res) => {
   try {
     const {
@@ -33,12 +31,11 @@ router.post('/drivers', authenticateToken, async (req, res) => {
       status
     } = req.body;
 
-    // ✅ Generate a unique employeeId (e.g., EMP-5321)
     const employeeId = `EMP-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const newDriver = await Driver.create({
       vendorId: req.user.id,
-      employeeId, // ✅ Include this
+      employeeId,
       name,
       phone,
       email,
@@ -61,7 +58,6 @@ router.post('/drivers', authenticateToken, async (req, res) => {
   }
 });
 
-// ✅ Get all vehicles for the logged-in vendor
 router.get('/vehicles', authenticateToken, async (req, res) => {
   try {
     const vehicles = await Vehicle.findAll({ where: { vendorId: req.user.id } });
@@ -72,7 +68,6 @@ router.get('/vehicles', authenticateToken, async (req, res) => {
   }
 });
 
-// ✅ Add a new vehicle
 router.post('/vehicles', authenticateToken, async (req, res) => {
   try {
     const {
