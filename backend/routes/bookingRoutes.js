@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Booking } = require('../models');
+const { Booking, Driver, Vehicle } = require('../models');
 const { authenticateToken } = require('../middleware/auth');
 
 router.get('/company', authenticateToken, async (req, res) => {
@@ -91,15 +91,28 @@ router.get('/open', authenticateToken, async (req, res) => {
 router.put('/:id/accept', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const booking = await Booking.findByPk(id);
+    const { driverId, vehicleId } = req.body;
 
+    if (!driverId || !vehicleId) {
+      return res.status(400).json({ message: 'Driver and vehicle must be assigned' });
+    }
+
+    const booking = await Booking.findByPk(id);
     if (!booking) return res.status(404).json({ message: 'Booking not found' });
 
-    if (!booking.isOpenMarket || booking.status !== 'pending') {
+    if (booking.status !== 'pending') {
       return res.status(400).json({ message: 'Booking is not available for acceptance' });
     }
 
+    const driver = await Driver.findOne({ where: { id: driverId, vendorId: req.user.id } });
+    if (!driver) return res.status(404).json({ message: 'Driver not found' });
+
+    const vehicle = await Vehicle.findOne({ where: { id: vehicleId, vendorId: req.user.id } });
+    if (!vehicle) return res.status(404).json({ message: 'Vehicle not found' });
+
     booking.vendorId = req.user.id;
+    booking.driverId = driverId;
+    booking.vehicleId = vehicleId;
     booking.status = 'accepted';
     booking.isOpenMarket = false;
     await booking.save();
